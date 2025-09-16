@@ -5,7 +5,8 @@
  * @returns {number}
  */
 function calculateSimpleRevenue(purchase, _product) {
-   // @TODO: Расчет выручки от операции
+    // @TODO: Расчет выручки от операции
+    const { discount, sale_price, quantity } = purchase;
 }
 
 /**
@@ -17,6 +18,7 @@ function calculateSimpleRevenue(purchase, _product) {
  */
 function calculateBonusByProfit(index, total, seller) {
     // @TODO: Расчет бонуса от позиции в рейтинге
+    const { profit } = seller;
 }
 
 /**
@@ -41,4 +43,35 @@ function analyzeSalesData(data, options) {
     // @TODO: Назначение премий на основе ранжирования
 
     // @TODO: Подготовка итоговой коллекции с нужными полями
+    const { calculateRevenue, calculateBonus } = options; // Сюда передадим функции для расчётов
+}
+
+/**
+ * Группаировка массива по ключу
+ * @param array - массив который группируем
+ * @param keyFn - ключ по которому будет происходить группировка
+ */
+function groupBy(array, keyFn) {
+    return array.reduce((acc, item) => {
+        const key = keyFn(item);
+        if (!acc[key]) acc[key] = []
+        acc[key].push(item);
+        return acc;
+    }, {});
+}
+
+const recordsBySeller = groupBy(data.purchase_records, record => record.seller_id);
+const recordsByCustomer = groupBy(data.purchase_records, record => record.customer_id);
+const recordsByProduct = groupBy(data.purchase_records.flatMap(record => record.items), item => item.sku);
+
+console.log('###recordsBySeller###', recordsBySeller);
+console.log('###recordsByCustomer###', recordsByCustomer);
+console.log('###recordsByProduct###', recordsByProduct);
+
+/**
+ * @param values - числа, значения из которых будет складываться среднее значение
+ * @returns {numbers}
+ */
+function averageValue(values) {
+
 }
