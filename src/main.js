@@ -70,8 +70,9 @@ console.log('###recordsByProduct###', recordsByProduct);
 
 /**
  * @param values - числа, значения из которых будет складываться среднее значение
- * @returns {numbers}
+ * @returns {numbersг}
  */
 function averageValue(values) {
-
+    const sum = values.reduce((acc, values) => acc + values, 0);
+    return sum / values.length || 0;
 }
