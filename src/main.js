@@ -69,10 +69,61 @@ console.log('###recordsByCustomer###', recordsByCustomer);
 console.log('###recordsByProduct###', recordsByProduct);
 
 /**
+ * Расчет среднего значенияe
  * @param values - числа, значения из которых будет складываться среднее значение
  * @returns {numbersг}
  */
 function averageValue(values) {
     const sum = values.reduce((acc, values) => acc + values, 0);
     return sum / values.length || 0;
+}
+
+/**
+* Простой расчёт прибыли
+* @param item
+* @param product
+* @returns {number}
+*/
+function simpleProfit(item, product) {
+     return item.sale_price * item.quantity * (1 - item.discount / 100) - product.purchase_price * item.quantity;
+}
+
+/**
+* Накопительное вычисление прибыли, выручки и других метрик
+* @param records
+* @param calculateProfit
+* @param products
+* @returns｛*｝
+*/
+function baseMetrics(records, simpleProfit, products) {
+// принимает начальное значение аккумулятора ( sellers: f}, customers: f}, products: f} } содержит статистику, сгруппированную по продавцам, покупателям и продуктам
+    return records.reduce ((acc, record) => {
+        const sellerId = record.seller_id;
+        const customerId = record.customer_id;
+
+        if (!acc.sellers[sellerId]) acc.sellers[sellerId] = { revenue: 0, profit: 0, items: [], customers: new Set() };
+        if (!acc.customers[customerId]) acc.customers[customerId] = { revenue: 0, profit: 0, sellers: new Set() };
+        // Для каждого товара в record.items, находит соответствующий продукт в массиве products и рассчитывает прибыль для товара
+        record.items.forEach(item => {
+        // Находит соответствующий продукт в массиве products
+            const product = products.find(p => p.sku === item.sku);
+            const profit = calculateProfit(item, product);
+            // Обновление статистики продавца
+            acc.sellers[sellerId].revenue += item.sale_price * item.quantity * (1 - item.discount / 100);
+            acc.sellers[sellerId].profit += profit;
+            acc.sellers[sellerId].items.push(item);
+            acc.sellers[sellerId].customers.add(customerId);
+
+            // Обновление статистики покупателя
+            acc.customers[customerId].revenue += item.sale_price * item.quantity * (1 - item.discount / 100);
+            acc.customers[customerId].profit += profit;
+            acc.customers[customerId].sellers.add(sellerId);
+
+            //Обновление статистики по продуктам
+            if (!acc.products[item.sku]) acc.products[item.sku] = { quantity: 0, revenue: 0 };
+            acc.products[item.sku].quantity += item.quantity;
+            acc.products[item.sku].revenue += item.sale_price * item.quantity * (1 - item.discount / 100);
+        });
+    return acc;
+    }, {sellers: {}, customers: {}, products: {}});
 }
