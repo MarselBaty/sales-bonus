@@ -177,3 +177,20 @@ function bonusBestCustomer ({ stats }) {
         bonus: +(bestCustomer.revenue * 0.05).toFixed(2),
     };
 }
+
+// Продавец лучше всего удерживающий покупателя
+function bonusCustomerRetention ({ stats }) {
+    const bestRetention = Object.entries(stats.sellers).reduce((best, [sellerId, data]) => {
+        const customerCounts = Array.from(dara.customers).map(customerId =>
+            stats.customers[customerId]?.revenue || 0);    
+        const maxCustomerRevenue = Math.max(...customerCounts);
+
+        return maxCustomerRevenue > (best?.revenue || 0) ? { sellerId, revenue: maxCustomerRevenue } : best;
+    }, null);
+
+    return {
+        category: "Best Customer Retention",
+        seller_id: bestRetention.seller_id,
+        bonus: 1000,
+    };
+}
