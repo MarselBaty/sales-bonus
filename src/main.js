@@ -194,3 +194,18 @@ function bonusCustomerRetention ({ stats }) {
         bonus: 1000,
     };
 }
+
+// Продавец привлекший клиента с наибольшим чеком
+function bonusLargestSingleSale({ recordsBySeller }) {
+    const largestSale = Object.entries(recordsBySeller).reduce((max, [sellerId, records]) => {
+        const largestRecord = records.reduce((recordMax, record) => 
+            record.total_amount > (recordMax?.total_amount || 0) ? record :recordMax, null);
+        return largestRecord?.total_amount > (max?.total_amount || 0) ? largestRecord: max;
+    }, null);
+
+    return {
+        category: "Largest Single Sale", 
+        seller_id: largestSale.seller_id,
+        bonus: +(LargestSale.total_amount * 0.1). toFixed(2),
+    };
+}
