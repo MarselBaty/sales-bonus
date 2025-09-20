@@ -209,3 +209,17 @@ function bonusLargestSingleSale({ recordsBySeller }) {
         bonus: +(LargestSale.total_amount * 0.1). toFixed(2),
     };
 }
+
+// Продавец с наибольшей средней прибылью
+function bonusHighestAverageProfit({ stats }) {
+    const bestSeller = Object.entries(stats.sellers).reduce((max, [sellerId, data]) => {
+        const avgProfit = data.profit / (data.items.length || 1);
+        return avgProfit > (max?.avgProfit || 0) ? { sellerid, avgProfit } : max;
+    }, null);
+
+    return {
+        category: "Highest Average Profit", 
+        seller_id: bestSeller.sellerId,
+        bonus: +(bestSeller.avgProfit * 0.1).toFixed(2),
+    };
+}
